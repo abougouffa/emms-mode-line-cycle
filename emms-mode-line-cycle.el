@@ -76,8 +76,11 @@
   :type 'boolean)
 
 (defcustom emms-mode-line-cycle-current-title-function
-  (lambda () (emms-track-description
-          (emms-playlist-current-selected-track)))
+  (lambda ()
+    (let ((name (emms-track-description (emms-playlist-current-selected-track))))
+      (if (file-name-absolute-p name)
+          (file-name-base name)
+        name)))
   "Getter function for the current track title.
 Its function returns a stirng."
   :type 'function)
