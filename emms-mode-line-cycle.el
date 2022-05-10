@@ -4,12 +4,13 @@
 ;; Copyright (C) 2021 Abdelhak Bougouffa
 
 ;; Keywords: emms, mode-line
-;; Version: 0.2.5
-;; Package-Requires: ((emacs "24") (emms "4.0"))
-;; Original Author: momomo5717
-;; URL: https://github.com/momomo5717/emms-mode-line-cycle
-;; Maintainer: Abdelhak Bougouffa
-;; URL: https://github.com/abougouffa/emms-mode-line-cycle
+;; Version: 0.2.6
+;; Package-Requires: ((emacs "26") (emms "9.0"))
+;; Original author: momomo5717
+;; Original URL: https://github.com/momomo5717/emms-mode-line-cycle
+;; Modified by: abougouffa
+;; Original URL: https://github.com/abougouffa/emms-mode-line-cycle
+
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -33,7 +34,7 @@
 ;;  It is useful for long track titles.
 ;;
 ;; Further information is available from:
-;; https://github.com/momomo5717/emms-mode-line-cycle  (README.org)
+;; https://github.com/abougouffa/emms-mode-line-cycle  (README.org)
 ;;
 
 ;; Setup:
@@ -77,8 +78,11 @@
   :type 'boolean)
 
 (defcustom emms-mode-line-cycle-current-title-function
-  (lambda () (emms-track-description
-              (emms-playlist-current-selected-track)))
+  (lambda ()
+    (let ((name (emms-track-description (emms-playlist-current-selected-track))))
+      (if (file-name-absolute-p name)
+          (file-name-base name)
+        name)))
   "Getter function for the current track title.
 Its function returns a stirng."
   :type 'function)
@@ -107,13 +111,13 @@ Its function returns a stirng."
   "Substring STR with `emms-mode-line-cycle-max-width'.
 WIDTH is string width."
   (truncate-string-to-width
-   str (or width emms-mode-line-cycle-max-width) 0 ? ))
+   str (or width emms-mode-line-cycle-max-width) 0 ?))
 
 (defun emms-mode-line-cycle--make-title-queue (title)
   "Return a queue of TITLE."
   (let ((char-ls (nconc (string-to-list title)
                         (make-list emms-mode-line-cycle-additional-space-num
-                                   ? )))
+                                   ?)))
         (queue (cons nil nil)))
     (setcar queue (last (setcdr queue char-ls)))
     queue))
@@ -196,10 +200,8 @@ If TITLE is no-nil, it is set to emms-mode-line-cycle's global variables."
 (defun emms-mode-line-cycle-update-mode-line-string (&rest _)
   "Update `emms-mode-line-string', if `emms-mode-line-cycle' is non-nil.
 This can be used as a before/after advice."
-  (when (and emms-mode-line-cycle
-             (emms-mode-line-cycle--rotate-title-p))
-    (setq emms-mode-line-string
-          (emms-mode-line-cycle--playlist-current))))
+  (when (and emms-mode-line-cycle (emms-mode-line-cycle--rotate-title-p))
+    (setq emms-mode-line-string (emms-mode-line-cycle--playlist-current))))
 
 (unless (require 'nadvice nil t)
   (defadvice emms-playing-time-display
