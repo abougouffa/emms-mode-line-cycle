@@ -1,6 +1,7 @@
 ;;; emms-mode-line-cycle.el --- Display the emms mode line as a ticker -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2015-2016 momomo5717
+;; Copyright (C) 2021 Abdelhak Bougouffa
 
 ;; Keywords: emms, mode-line
 ;; Version: 0.2.6
@@ -9,6 +10,7 @@
 ;; Original URL: https://github.com/momomo5717/emms-mode-line-cycle
 ;; Modified by: abougouffa
 ;; Original URL: https://github.com/abougouffa/emms-mode-line-cycle
+
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
