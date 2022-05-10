@@ -3,10 +3,12 @@
 ;; Copyright (C) 2015-2016 momomo5717
 
 ;; Keywords: emms, mode-line
-;; Version: 0.2.5
-;; Package-Requires: ((emacs "24") (emms "4.0"))
-;; Author: momomo5717
-;; URL: https://github.com/momomo5717/emms-mode-line-cycle
+;; Version: 0.2.6
+;; Package-Requires: ((emacs "26") (emms "9.0"))
+;; Original author: momomo5717
+;; Original URL: https://github.com/momomo5717/emms-mode-line-cycle
+;; Modified by: abougouffa
+;; Original URL: https://github.com/abougouffa/emms-mode-line-cycle
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,7 +32,7 @@
 ;;  It is useful for long track titles.
 ;;
 ;; Further information is available from:
-;; https://github.com/momomo5717/emms-mode-line-cycle  (README.org)
+;; https://github.com/abougouffa/emms-mode-line-cycle  (README.org)
 ;;
 
 ;; Setup:
@@ -41,10 +43,6 @@
 ;; (emms-mode-line 1)
 ;; (emms-playing-time 1)
 ;;
-;; ;; `emms-mode-line-cycle' can be used with emms-mode-line-icon.
-;; (require 'emms-mode-line-icon)
-;; (custom-set-variables '(emms-mode-line-cycle-use-icon-p t))
-;;
 ;; (emms-mode-line-cycle 1)
 ;;
 ;; User Option:
@@ -52,7 +50,6 @@
 ;;  + `emms-mode-line-cycle-max-width'
 ;;  + `emms-mode-line-cycle-any-width-p'
 ;;  + `emms-mode-line-cycle-additional-space-num'
-;;  + `emms-mode-line-cycle-use-icon-p'
 ;;  + `emms-mode-line-cycle-current-title-function'
 ;;  + `emms-mode-line-cycle-velocity'
 ;;
@@ -78,11 +75,6 @@
   "Rotate title which is less than `emms-mode-line-cycle-max-width'."
   :type 'boolean)
 
-(defcustom emms-mode-line-cycle-use-icon-p nil
-  "Use icon like `emms-mode-line-icon-function'.
-This feature depends on emms-mode-line-icon."
-  :type 'boolean)
-
 (defcustom emms-mode-line-cycle-current-title-function
   (lambda () (emms-track-description
           (emms-playlist-current-selected-track)))
@@ -95,8 +87,6 @@ Its function returns a stirng."
   :type 'integer)
 
 (defvar emms-mode-line-cycle) ; Suppress a warning message
-(defvar emms-mode-line-icon-before-format)
-(defvar emms-mode-line-icon-image-cache)
 
 (defvar emms-mode-line-cycle--title ""
   "The current track title.")
@@ -195,32 +185,18 @@ If INITIALP is no-nil, initialized."
   (format emms-mode-line-format
           (emms-mode-line-cycle-get-title (unless initialp emms-mode-line-cycle-velocity))))
 
-(defun emms-mode-line-cycle--icon-function (&optional title initialp)
-  "Format the current track TITLE like `emms-mode-line-icon-function'.
-If INITIALP is no-nil, initialized."
-  (concat " "
-          emms-mode-line-icon-before-format
-          (emms-propertize "NP:" 'display emms-mode-line-icon-image-cache)
-          (emms-mode-line-cycle--playlist-current title initialp)))
-
 ;;;###autoload
 (defun emms-mode-line-cycle-mode-line-function (&optional title)
   "This is used as `emms-mode-line-mode-line-function'.
 If TITLE is no-nil, it is set to emms-mode-line-cycle's global variables."
-  (if emms-mode-line-cycle-use-icon-p
-      (emms-mode-line-cycle--icon-function title t)
-    (emms-mode-line-cycle--playlist-current title t)))
+  (emms-mode-line-cycle--playlist-current title t))
 
 ;;;###autoload
 (defun emms-mode-line-cycle-update-mode-line-string (&rest _)
   "Update `emms-mode-line-string', if `emms-mode-line-cycle' is non-nil.
 This can be used as a before/after advice."
-  (when (and emms-mode-line-cycle
-             (emms-mode-line-cycle--rotate-title-p))
-    (setq emms-mode-line-string
-          (if emms-mode-line-cycle-use-icon-p
-              (emms-mode-line-cycle--icon-function)
-            (emms-mode-line-cycle--playlist-current)))))
+  (when (and emms-mode-line-cycle (emms-mode-line-cycle--rotate-title-p))
+    (setq emms-mode-line-string (emms-mode-line-cycle--playlist-current))))
 
 (unless (require 'nadvice nil t)
   (defadvice emms-playing-time-display
