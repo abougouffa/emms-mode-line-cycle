@@ -111,13 +111,13 @@ Its function returns a stirng."
   "Substring STR with `emms-mode-line-cycle-max-width'.
 WIDTH is string width."
   (truncate-string-to-width
-   str (or width emms-mode-line-cycle-max-width) 0 ?))
+   str (or width emms-mode-line-cycle-max-width) 0 (string-to-char " ")))
 
 (defun emms-mode-line-cycle--make-title-queue (title)
   "Return a queue of TITLE."
   (let ((char-ls (nconc (string-to-list title)
                         (make-list emms-mode-line-cycle-additional-space-num
-                                   ?)))
+                                   (string-to-char " "))))
         (queue (cons nil nil)))
     (setcar queue (last (setcdr queue char-ls)))
     queue))
